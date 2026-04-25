@@ -213,7 +213,7 @@ uppercaseFields.forEach((field) => {
 });
 
 successResetButton.addEventListener("click", () => {
-  window.location.href = window.location.pathname;
+  window.location.href = "https://samwan25.github.io/sk-job-card/";
 });
 
 form.addEventListener("submit", async (event) => {
