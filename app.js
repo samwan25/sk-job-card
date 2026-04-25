@@ -220,7 +220,7 @@ uppercaseFields.forEach((field) => {
 });
 
 successResetButton.addEventListener("click", () => {
-  window.location.assign(`${window.location.origin}/?fresh=${Date.now()}`);
+  window.location.assign(window.location.href.split("?")[0] + `?fresh=${Date.now()}`);
 });
 
 form.addEventListener("submit", async (event) => {
