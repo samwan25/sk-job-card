@@ -1,5 +1,11 @@
 // ─── Web3Forms Configuration ──────────────────────────────────────────────────
 const WEB3FORMS_ACCESS_KEY = "533ce89d-3e49-4a23-a6c0-0dd6d6ef24a5";
+const ALL_RECIPIENTS = [
+  "samwanhub@gmail.com",
+  "djsamwan2015@gmail.com",
+  "christellatuyi26@gmail.com",
+  "habibapristie@gmail.com"
+];
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DEPARTMENTS = [
@@ -92,19 +98,6 @@ function formatNumberWithCommas(value) {
   const digits = value.replace(/[^\d]/g, "");
   if (!digits) return "";
   return Number(digits).toLocaleString("en-US");
-}
-
-function getRecipientsForPayload(payload) {
-  return Array.from(
-    new Set(
-      payload.departments
-        .filter((d) => d.selected)
-        .flatMap((d) => {
-          const node = departmentNodes.find((item) => item.name === d.name);
-          return node ? node.recipients : [];
-        })
-    )
-  );
 }
 
 function buildEmailText(payload) {
@@ -220,7 +213,7 @@ uppercaseFields.forEach((field) => {
 });
 
 successResetButton.addEventListener("click", () => {
-  window.location.assign(window.location.href.split("?")[0] + `?fresh=${Date.now()}`);
+  window.location.href = window.location.pathname;
 });
 
 form.addEventListener("submit", async (event) => {
@@ -245,32 +238,28 @@ form.addEventListener("submit", async (event) => {
 
   const subject = `Job Card: ${payload.jobTitle} / ${payload.clientName}`;
   const body = buildEmailText(payload);
-  const recipients = getRecipientsForPayload(payload);
 
   try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_ACCESS_KEY,
-        subject: subject,
-        message: body
-      })
-    });
-
-    const result = await response.json();
-    if (!result.success) throw new Error(result.message);
+    await Promise.all(
+      ALL_RECIPIENTS.map((email) =>
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_ACCESS_KEY,
+            subject: subject,
+            message: body,
+            email: email
+          })
+        })
+      )
+    );
 
     setStatus("Job card sent successfully!", "success");
     showSuccessScreen();
     resetFormAfterSend();
   } catch (error) {
-    const mailtoUrl = `mailto:${recipients.join(",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
-    setStatus(
-      `Could not send automatically. Your email app has been opened as a fallback for: ${recipients.join(", ")}`,
-      "error"
-    );
+    setStatus("Could not send. Please try again.", "error");
   } finally {
     submitButton.disabled = false;
   }
