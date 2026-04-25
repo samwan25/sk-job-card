@@ -1,27 +1,12 @@
-// ─── Formspree Configuration ──────────────────────────────────────────────────
-// Emails go to: said.seleckalaos@gmail.com
-// First submission: Formspree will send a one-time confirmation to that address.
-// Click "Confirm your form" in that email — then all future submissions arrive normally.
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvazpvk";
+// ─── Web3Forms Configuration ──────────────────────────────────────────────────
+const WEB3FORMS_ACCESS_KEY = "533ce89d-3e49-4a23-a6c0-0dd6d6ef24a5";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DEPARTMENTS = [
-  {
-    name: "HP Indigo Department",
-    recipients: ["said.selectkalaos@gmail.com"]
-  },
-  {
-    name: "Large Format Department",
-    recipients: ["said.selectkalaos@gmail.com"]
-  },
-  {
-    name: "Design Work",
-    recipients: ["said.selectkalaos@gmail.com"]
-  },
-  {
-    name: "Offset Printing Department",
-    recipients: ["said.selectkalaos@gmail.com"]
-  }
+  { name: "HP Indigo Department", recipients: ["said.selectkalaos@gmail.com"] },
+  { name: "Large Format Department", recipients: ["said.selectkalaos@gmail.com"] },
+  { name: "Design Work", recipients: ["said.selectkalaos@gmail.com"] },
+  { name: "Offset Printing Department", recipients: ["said.selectkalaos@gmail.com"] }
 ];
 
 const form = document.getElementById("job-card-form");
@@ -54,13 +39,10 @@ const departmentNodes = DEPARTMENTS.map((departmentConfig, index) => {
     card.classList.toggle("is-active", checkbox.checked);
     updateSummary();
   });
-
   fragment.querySelectorAll("input, textarea").forEach((field) => {
     field.addEventListener("input", updateSummary);
   });
-
   departmentList.appendChild(fragment);
-
   const appendedCard = departmentList.lastElementChild;
   return {
     name: departmentConfig.name,
@@ -115,10 +97,12 @@ function formatNumberWithCommas(value) {
 function getRecipientsForPayload(payload) {
   return Array.from(
     new Set(
-      payload.departments.filter((d) => d.selected).flatMap((d) => {
-        const node = departmentNodes.find((item) => item.name === d.name);
-        return node ? node.recipients : [];
-      })
+      payload.departments
+        .filter((d) => d.selected)
+        .flatMap((d) => {
+          const node = departmentNodes.find((item) => item.name === d.name);
+          return node ? node.recipients : [];
+        })
     )
   );
 }
@@ -259,22 +243,23 @@ form.addEventListener("submit", async (event) => {
   submitButton.disabled = true;
   setStatus("Sending job card...", "");
 
-  const recipients = getRecipientsForPayload(payload);
   const subject = `Job Card: ${payload.jobTitle} / ${payload.clientName}`;
   const body = buildEmailText(payload);
+  const recipients = getRecipientsForPayload(payload);
 
   try {
-    const response = await fetch(FORMSPREE_ENDPOINT, {
+    const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        _replyto: payload.clientContact || "",
+        access_key: WEB3FORMS_ACCESS_KEY,
         subject: subject,
         message: body
       })
     });
 
-    if (!response.ok) throw new Error("Formspree error");
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message);
 
     setStatus("Job card sent successfully!", "success");
     showSuccessScreen();
@@ -293,7 +278,5 @@ form.addEventListener("submit", async (event) => {
 
 hideSuccessScreen();
 resetFormAfterSend();
-
 window.addEventListener("pageshow", () => hideSuccessScreen());
-
 updateSummary();
