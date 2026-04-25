@@ -1,11 +1,6 @@
 // ─── Web3Forms Configuration ──────────────────────────────────────────────────
 const WEB3FORMS_ACCESS_KEY = "533ce89d-3e49-4a23-a6c0-0dd6d6ef24a5";
-const ALL_RECIPIENTS = [
-  "samwanhub@gmail.com",
-  "djsamwan2015@gmail.com",
-  "christellatuyi26@gmail.com",
-  "habibapristie@gmail.com"
-];
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DEPARTMENTS = [
