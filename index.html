@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SK Job Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__branding">
+          <img class="hero__logo" src="./assets/select-kalaos-logo.png" alt="Select Kalaos logo" />
+          <div>
+            <p class="eyebrow">Commercial Intake</p>
+            <h1>SK Job Card</h1>
+            <p class="hero__text">
+              One form for every incoming job, with department-specific instructions and a live production summary.
+            </p>
+          </div>
+        </div>
+        <div class="hero__badge">
+          <span>Creative direction</span>
+          <strong>Designed by Samwan</strong>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel--form">
+          <form id="job-card-form" novalidate>
+            <div class="section-heading">
+              <h2>Job Details</h2>
+              <p>Commercial colleagues complete this when a new order enters production.</p>
+            </div>
+
+            <div class="grid grid--two">
+              <label class="field">
+                <span>Client / company</span>
+                <input type="text" name="clientName" placeholder="Client name" required />
+              </label>
+              <label class="field">
+                <span>Job Description</span>
+                <input type="text" name="jobTitle" placeholder="Example: Spring catalogue reprint" required />
+              </label>
+              <label class="field">
+                <span>Commercial Agent</span>
+                <input type="text" name="commercialPerson" placeholder="Who entered the job?" required />
+              </label>
+              <label class="field">
+                <span>Client contact</span>
+                <input type="text" name="clientContact" placeholder="Email or phone" />
+              </label>
+              <label class="field">
+                <span>Due date</span>
+                <input type="date" name="dueDate" />
+              </label>
+              <label class="field">
+                <span>Priority</span>
+                <select name="priority">
+                  <option>Standard</option>
+                  <option>Urgent</option>
+                  <option>Critical</option>
+                </select>
+              </label>
+              <div class="field">
+                <span>Total price</span>
+                <div class="price-group">
+                  <input type="text" name="totalPriceAmount" inputmode="numeric" placeholder="Example: 1,250" />
+                  <select name="totalPriceCurrency">
+                    <option>RWF</option>
+                    <option>USD</option>
+                  </select>
+                </div>
+              </div>
+              <label class="field">
+                <span>Payment status</span>
+                <select name="paymentStatus">
+                  <option>Fully Paid</option>
+                  <option>LPO Received</option>
+                  <option>Invoice Sent</option>
+                  <option>Advance Paid</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="section-heading section-heading--compact">
+              <h2>Departments</h2>
+              <p>Select every department involved in the job and fill in the production notes for each one.</p>
+            </div>
+
+            <div class="recipient-note">
+              Emails are chosen automatically from the selected departments when the job card is sent.
+            </div>
+
+            <div id="department-list" class="department-list"></div>
+
+            <div class="form-footer">
+              <div id="form-status" class="form-status" aria-live="polite"></div>
+              <button class="submit-button" type="submit">Send Job Card</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="panel panel--summary">
+          <div class="section-heading section-heading--compact">
+            <h2>All Jobs Summary</h2>
+            <p>A live overview of the selected departments and their production details.</p>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-card__meta">
+              <span id="summary-job-title">No client yet</span>
+              <strong id="summary-client">No description yet</strong>
+            </div>
+            <div class="summary-card__meta">
+              <span>Due date</span>
+              <strong id="summary-date">Not set</strong>
+            </div>
+            <div class="summary-card__meta">
+              <span>Total price</span>
+              <strong id="summary-price">Not set</strong>
+            </div>
+            <div class="summary-card__meta">
+              <span>Payment status</span>
+              <strong id="summary-payment">Fully Paid</strong>
+            </div>
+          </div>
+
+          <div id="summary-list" class="summary-list"></div>
+        </aside>
+      </main>
+
+      <section id="success-screen" class="success-screen" hidden>
+        <div class="success-screen__card">
+          <p class="eyebrow">Submission Complete</p>
+          <h2>SK Job Card sent successfully</h2>
+          <p id="success-message" class="success-screen__text">
+            Please follow up with the operator in charge !
+          </p>
+          <button id="success-reset" class="submit-button success-screen__button" type="button">
+            Create another job card
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <template id="department-template">
+      <article class="department-card">
+        <label class="department-card__toggle">
+          <input type="checkbox" class="department-checkbox" />
+          <span class="department-card__title"></span>
+        </label>
+
+        <div class="department-card__body">
+          <div class="grid grid--two">
+            <label class="field">
+              <span>Quantity</span>
+              <input type="text" class="department-quantity" placeholder="Example: 2,000 pieces" />
+            </label>
+            <label class="field">
+              <span>Size / format</span>
+              <input type="text" class="department-size" placeholder="Example: A3 folded to A4" />
+            </label>
+            <label class="field">
+              <span>Material</span>
+              <input type="text" class="department-material" placeholder="Paper, foil, board, vinyl..." />
+            </label>
+            <label class="field">
+              <span>Finishing</span>
+              <input type="text" class="department-finishing" placeholder="Lamination, folding, creasing..." />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Department notes</span>
+            <textarea
+              class="department-notes"
+              rows="4"
+              placeholder="Machine requirements, colors, deadlines, setup notes..."
+            ></textarea>
+          </label>
+        </div>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
